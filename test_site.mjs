@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+const app=fs.readFileSync('site/app.js','utf8');
+assert.match(app,/Sontriqa-Setup-x64\.exe/);
+assert.match(app,/SHA256SUMS\.txt/);
+assert.match(app,/latest\.json/);
+assert.match(app,/Sontriqa-Setup-x64\.exe\.sig/);
+assert.match(app,/release\.draft \|\| release\.prerelease/);
+assert.match(fs.readFileSync('site/index.html','utf8'),/aria-disabled="true"/);
+const wf=fs.readFileSync('.github/workflows/pages.yml','utf8');
+assert.match(wf,/actions\/deploy-pages@v4/);
+const result=spawnSync(process.execPath,['scripts/generate-site-config.mjs','Crossbill-prog/sontriqa','site/config.js'],{encoding:'utf8'});
+assert.equal(result.status,0,result.stderr);
+assert.match(fs.readFileSync('site/config.js','utf8'),/Crossbill-prog\/sontriqa/);
+console.log('Public download-site self-check OK');

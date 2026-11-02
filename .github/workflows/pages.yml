@@ -1,32 +1,39 @@
-name: Publish Sontriqa site
+name: 03 — Deploy official download page (GitHub Pages)
+
 on:
-  push:
-    branches: [main]
-    paths:
-      - index.html
-      - privacy.html
-      - LICENSE-AppAudioRouter.txt
-      - .github/workflows/pages.yml
   workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'site/**'
+      - 'scripts/generate-site-config.mjs'
+      - '.github/workflows/pages.yml'
+
 permissions:
   contents: read
   pages: write
   id-token: write
+
 concurrency:
-  group: github-pages
+  group: pages
   cancel-in-progress: false
+
 jobs:
   deploy:
-    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate repository-specific configuration
+        run: node scripts/generate-site-config.mjs "${{ github.repository }}" site/config.js
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
-      - name: Deploy
-        id: deployment
+          path: site
+      - id: deployment
         uses: actions/deploy-pages@v4
