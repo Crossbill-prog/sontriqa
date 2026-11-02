@@ -9,12 +9,14 @@
   <link rel="icon" href="assets/sontriqa-icon.png" type="image/png">
   <link rel="stylesheet" href="styles.css">
   <script defer src="config.js"></script>
+  <script defer src="i18n.js"></script>
   <script defer src="app.js"></script>
 </head>
 <body>
   <header class="top wrap">
     <a class="brand" href="#top" aria-label="Sontriqa, главная"><img src="assets/sontriqa-icon.png" alt="" width="38" height="38"><span>Sontriqa</span></a>
     <nav aria-label="Основная навигация"><a href="#features">Возможности</a><a href="#how">Как работает</a><a href="#support">Автор</a></nav>
+    <div class="site-lang" role="group" aria-label="Язык интерфейса"><button type="button" data-lang="ru" aria-pressed="true">RU</button><span aria-hidden="true">/</span><button type="button" data-lang="en" aria-pressed="false">EN</button></div>
   </header>
   <main id="top">
     <section class="hero wrap">
@@ -23,7 +25,7 @@
         <h1>Твой звук — <span>твои правила</span></h1>
         <p>Игра — на саундбар и телевизор одновременно, браузер — в наушники. Выбирай устройства и регулируй громкость каждого выхода отдельно.</p>
         <div class="primary-actions"><a class="button primary disabled" id="download" aria-disabled="true">Проверяем выпуск</a><a class="button secondary" id="releases" hidden>Все версии</a></div>
-        <div class="release-meta" id="release-status" role="status" aria-live="polite">Стабильный установщик пока не опубликован.</div>
+        <div class="release-meta" id="release-status" role="status" aria-live="polite" data-i18n-dynamic>Стабильный установщик пока не опубликован.</div>
         <div class="small">Windows 10/11 · 64-bit · один установщик EXE · без регистрации</div>
       </div>
       <div class="preview" role="img" aria-label="Пример таблицы Sontriqa: разные приложения и выбранные аудиовыходы">
