@@ -4,6 +4,11 @@
 const repo = window.SONTRIQA_REPOSITORY || '';
 const button = document.getElementById('download');
 const status = document.getElementById('release-status');
+const setStatusMessage = (message) => {
+  if (window.SontriqaI18n?.dynamicText) window.SontriqaI18n.dynamicText('release-status', message);
+  else status.textContent = message;
+};
+setStatusMessage('Стабильный установщик пока не опубликован.');
 const releases = document.getElementById('releases');
 if (/^[\w.-]+\/[\w.-]+$/.test(repo)) {
   releases.hidden = false;
@@ -15,15 +20,19 @@ if (/^[\w.-]+\/[\w.-]+$/.test(repo)) {
       const asset = release.assets?.find(file => file.name === 'Sontriqa-Setup-x64.exe' && file.state === 'uploaded' && file.size > 750_000 && /^https:\/\/github\.com\//.test(file.browser_download_url));
       if (!asset || !release.assets?.some(file => file.name === 'SHA256SUMS.txt') || !release.assets?.some(file => file.name === 'latest.json') || !release.assets?.some(file => file.name === 'Sontriqa-Setup-x64.exe.sig')) return;
       button.href = asset.browser_download_url;
-      button.textContent = 'Скачать Sontriqa';
+      button.textContent = window.SontriqaI18n?.language === 'en' ? 'Download Sontriqa' : 'Скачать Sontriqa';
       button.classList.remove('disabled');
       button.removeAttribute('aria-disabled');
-      status.textContent = `Актуальная стабильная версия: ${release.tag_name} · ${Math.round(asset.size/1024/1024)} МБ`;
+      setStatusMessage(`Актуальная стабильная версия: ${release.tag_name} · ${Math.round(asset.size/1024/1024)} МБ`);
     })
-    .catch(() => {status.textContent='Скачивание готовится или GitHub временно недоступен. Проверьте историю выпусков.';});
+    .catch(() => {setStatusMessage('Скачивание готовится или GitHub временно недоступен. Проверьте историю выпусков.');});
 }
 document.getElementById('copy-email').addEventListener('click', async () => {
   const label = document.getElementById('copy-status');
   try { await navigator.clipboard.writeText('phKlestov@yandex.ru'); label.textContent = 'Скопировано'; }
   catch { label.textContent = 'Скопируйте адрес вручную'; }
+});
+
+window.addEventListener('sontriqa:language', () => {
+  if (button?.href) button.textContent = window.SontriqaI18n?.language === 'en' ? 'Download Sontriqa' : 'Скачать Sontriqa';
 });
