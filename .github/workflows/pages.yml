@@ -26,8 +26,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
       - name: Generate repository-specific configuration
@@ -37,35 +37,15 @@ jobs:
           node test_site.mjs
           node test_site_i18n.mjs
           node test_site_release_guard.mjs
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
         with:
           enablement: true
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           # Retrying one job must not generate duplicate github-pages artifacts.
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: site
-      # One-time recovery for the 4 Nov 2026 GitHub Pages backend deployment
-      # that stayed in updating_pages after Actions timed out. No release asset
-      # or repository branch is changed by this targeted cancellation.
-      - name: Release one known stuck Pages deployment before deploying
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          old=6410c9d29e30a0134ab082c8cecf934bf1162ae3
-          status="$(gh api "repos/${{ github.repository }}/pages/deployments/$old" --jq '.status' 2>/dev/null || true)"
-          case "$status" in
-            updating_pages|in_progress|pending|queued|deployment_cancelled)
-              gh api --method POST "repos/${{ github.repository }}/pages/deployments/$old/cancel"
-              echo "Asked Pages API to cancel stuck deployment: $old (status was $status)"
-              # Give GitHub's Pages backend a moment to release its deployment lock.
-              sleep 15
-              ;;
-            *)
-              echo "No active stale Pages deployment: ${status:-not-found}"
-              ;;
-          esac
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
         with:
           artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
