@@ -19,7 +19,7 @@
   });
   function findStableInstaller(release, repo) {
     if (!release || release.draft || release.prerelease ||
-        !/^v?\d+\.\d+\.\d+$/.test(release.tag_name || '') ||
+        release.tag_name!==approvedStableTag ||
         !/^[\w.-]+\/[\w.-]+$/.test(repo || '') ||
         !Array.isArray(release.assets)) return null;
     const prefix='https://github.com/'+repo+'/releases/download/'+release.tag_name+'/';

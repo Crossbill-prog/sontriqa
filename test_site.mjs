@@ -5,9 +5,9 @@ const app=fs.readFileSync('site/app.js','utf8');
 const validator=fs.readFileSync('site/release-validator.js','utf8');
 assert.match(app,/SontriqaReleaseValidator\?\.findStableInstaller/);
 assert.match(validator,/release\.draft \|\| release\.prerelease/);
-assert.match(validator,/approvedStableTag='v1\\.0\\.0'/);
+assert.ok(validator.includes("const approvedStableTag='v1.0.0'"),'Only frozen accepted stable version is eligible');
 assert.match(validator,/approvedInstallerSHA256='de70bd9db13705d9f41bbc0db98e84471629fa3f333b0c6478a15feafb7c4254'/);
-assert.match(validator,/installer\\.digest/);
+assert.ok(validator.includes('installer.digest'),'Public download must validate GitHub SHA-256');
 for (const required of [
   'Sontriqa-Setup-x64.exe','Sontriqa-Setup-x64.exe.sig','SHA256SUMS.txt',
   'latest.json','THIRD_PARTY_DEPENDENCIES_GENERATED.txt',
