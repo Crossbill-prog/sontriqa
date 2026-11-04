@@ -9,6 +9,13 @@
   // Hashes taken from the exact privately verified release draft and bridge.
   const approvedManifestSHA256='bd095a956e9652670006f7bae7ee7685767ca236237506592df37538151ee227';
   const approvedMplSourceSHA256='a335861acf87a44528af2be1fccca202962f18b2443651abe4a9498a40c8b3bf';
+  // VULNERABILITY HOLD: original 1.0.0 EXE (tauri@2.11.1) is affected by
+  // GHSA-w28w-mhc8-qvjv (patched in tauri >= 2.11.6). The owner-accepted
+  // original hash is kept ONLY as an audit record. The download page must NOT
+  // automatically promote it even if a Release is accidentally published.
+  // Set true ONLY together with independently verified patched EXE hashes,
+  // new signed manifest, rebuilt MPL archive, and renewed Windows acceptance.
+  const securityFixApproved=false;
   const expectedAssets = Object.freeze({
     'Sontriqa-Setup-x64.exe': 750000,
     'Sontriqa-Setup-x64.exe.sig': 60,
@@ -20,7 +27,7 @@
     'SELECTORS_0.38.0_MPL_SOURCE.zip': 1000,
     'MPL_SOURCE_AVAILABILITY.txt': 100
   });
-  function findStableInstaller(release, repo) {
+  function inspectStableReleaseAssets(release, repo) {
     if (!release || release.draft || release.prerelease ||
         release.tag_name!==approvedStableTag ||
         !/^[\w.-]+\/[\w.-]+$/.test(repo || '') ||
@@ -43,5 +50,12 @@
     if (entries['SELECTORS_0.38.0_MPL_SOURCE.zip'].digest!==`sha256:${approvedMplSourceSHA256}`) return null;
     return installer;
   }
-  window.SontriqaReleaseValidator=Object.freeze({findStableInstaller, expectedAssets, approvedStableTag, approvedInstallerSHA256});
+  function findStableInstaller(release,repo){
+    if(!securityFixApproved)return null;
+    return inspectStableReleaseAssets(release,repo);
+  }
+  window.SontriqaReleaseValidator=Object.freeze({
+    findStableInstaller,inspectStableReleaseAssets,expectedAssets,
+    approvedStableTag,approvedInstallerSHA256,securityFixApproved
+  });
 })();
