@@ -4,6 +4,10 @@
 // This is not an independent Ed25519 verification or a legal release approval.
 // Approve each future stable version explicitly, including its tested EXE hash.
 (() => {
+  // The previously accepted installer uses vulnerable Tauri 2.11.1.
+  // Do NOT enable downloads until a new patched Windows binary is built,
+  // signed, verified, and explicitly approved with a replacement SHA-256.
+  const releaseHold=true;
   const approvedStableTag='v1.0.0';
   const approvedInstallerSHA256='de70bd9db13705d9f41bbc0db98e84471629fa3f333b0c6478a15feafb7c4254';
   // Hashes taken from the exact privately verified release draft and bridge.

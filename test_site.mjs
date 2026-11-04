@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 const app=fs.readFileSync('site/app.js','utf8');
 const validator=fs.readFileSync('site/release-validator.js','utf8');
+assert.ok(validator.includes('const releaseHold=true;'),'no stable 1.0 download until patched build accepted');
 assert.match(app,/SontriqaReleaseValidator\?\.findStableInstaller/);
 assert.match(validator,/release\.draft \|\| release\.prerelease/);
 assert.ok(validator.includes("const approvedStableTag='v1.0.0'"),'Only frozen accepted stable version is eligible');

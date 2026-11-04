@@ -4,7 +4,12 @@ import vm from 'node:vm';
 
 const source=fs.readFileSync('site/release-validator.js','utf8');
 const context={window:{}};
-vm.runInNewContext(source,context,{timeout:2000});
+// The live site must stay fail-closed until a patched signed 1.0 is accepted.
+assert.ok(source.includes('const releaseHold=true;'),'old vulnerable binary must be blocked');
+const production={window:{}};
+vm.runInNewContext(source,production,{timeout:2000});
+// Only the isolated test scenario opens the guard to cover all asset validation branches.
+vm.runInNewContext(source.replace('const releaseHold=true;','const releaseHold=false;'),context,{timeout:2000});
 const {findStableInstaller,inspectStableReleaseAssets,expectedAssets,approvedStableTag,approvedInstallerSHA256,securityFixApproved}=context.window.SontriqaReleaseValidator;
 assert.equal(securityFixApproved,false,'Known vulnerable Tauri 2.11.1 cannot be an approved public stable installer');
 const repo='Crossbill-prog/sontriqa';
@@ -19,6 +24,7 @@ const assets=Object.entries(expectedAssets).map(([name,minSize])=>({
   ...(name==='SELECTORS_0.38.0_MPL_SOURCE.zip'?{digest:'sha256:a335861acf87a44528af2be1fccca202962f18b2443651abe4a9498a40c8b3bf'}:{})
 }));
 const release={draft:false,prerelease:false,tag_name:tag,assets};
+assert.equal(production.window.SontriqaReleaseValidator.findStableInstaller(release,repo),null,'production must not link vulnerable 2.11.1 binary even if complete release is accidentally published');
 assert.ok(Object.hasOwn(expectedAssets,'SELECTORS_0.38.0_MPL_SOURCE.zip'),'stable 1.0 must require its exact MPL source');
 assert.ok(!Object.hasOwn(expectedAssets,'SELECTORS_0.36.1_MPL_SOURCE.zip'),'RC.18 MPL source cannot substitute for stable 1.0');
 assert.equal(findStableInstaller(release,repo),null,'Website must remain locked while GHSA-w28w is unresolved');
