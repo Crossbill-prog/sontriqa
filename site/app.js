@@ -16,9 +16,8 @@ if (/^[\w.-]+\/[\w.-]+$/.test(repo)) {
   fetch(`https://api.github.com/repos/${repo}/releases/latest`, {headers: {'Accept':'application/vnd.github+json'}, credentials:'omit'})
     .then(response => {if (!response.ok) throw new Error('Not published'); return response.json();})
     .then(release => {
-      if (release.draft || release.prerelease || !/^v?\d+\.\d+\.\d+$/.test(release.tag_name)) return;
-      const asset = release.assets?.find(file => file.name === 'Sontriqa-Setup-x64.exe' && file.state === 'uploaded' && file.size > 750_000 && /^https:\/\/github\.com\//.test(file.browser_download_url));
-      if (!asset || !release.assets?.some(file => file.name === 'SHA256SUMS.txt') || !release.assets?.some(file => file.name === 'latest.json') || !release.assets?.some(file => file.name === 'Sontriqa-Setup-x64.exe.sig')) return;
+      const asset = window.SontriqaReleaseValidator?.findStableInstaller(release,repo);
+      if (!asset) return;
       button.href = asset.browser_download_url;
       button.textContent = window.SontriqaI18n?.language === 'en' ? 'Download Sontriqa' : 'Скачать Sontriqa';
       button.classList.remove('disabled');
