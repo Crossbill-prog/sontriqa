@@ -13,7 +13,9 @@ assert.equal(approvedInstallerSHA256,'de70bd9db13705d9f41bbc0db98e84471629fa3f33
 const base='https://github.com/'+repo+'/releases/download/'+tag+'/';
 const assets=Object.entries(expectedAssets).map(([name,minSize])=>({
   name,state:'uploaded',size:minSize+1000,browser_download_url:base+name,
-  ...(name==='Sontriqa-Setup-x64.exe'?{digest:'sha256:'+approvedInstallerSHA256}:{})
+  ...(name==='Sontriqa-Setup-x64.exe'?{digest:'sha256:'+approvedInstallerSHA256}:{}),
+  ...(name==='latest.json'?{digest:'sha256:bd095a956e9652670006f7bae7ee7685767ca236237506592df37538151ee227'}:{}),
+  ...(name==='SELECTORS_0.38.0_MPL_SOURCE.zip'?{digest:'sha256:a335861acf87a44528af2be1fccca202962f18b2443651abe4a9498a40c8b3bf'}:{})
 }));
 const release={draft:false,prerelease:false,tag_name:tag,assets};
 assert.ok(Object.hasOwn(expectedAssets,'SELECTORS_0.38.0_MPL_SOURCE.zip'),'stable 1.0 must require its exact MPL source');
@@ -23,6 +25,12 @@ assert.equal(selected?.name,'Sontriqa-Setup-x64.exe','complete stable release sh
 for (const [name] of Object.entries(expectedAssets)) {
   const sparse={...release,assets:assets.filter(asset=>asset.name!==name)};
   assert.equal(findStableInstaller(sparse,repo),null,'Missing required stable asset must block: '+name);
+}
+for (const critical of ['latest.json','SELECTORS_0.38.0_MPL_SOURCE.zip']) {
+  const tampered=assets.map(a=>a.name===critical?{...a,digest:'sha256:'+('0'.repeat(64))}:a);
+  assert.equal(findStableInstaller({...release,assets:tampered},repo),null,'Wrong signed manifest or covered-source hash must block: '+critical);
+  const absent=assets.map(a=>a.name===critical?{...a,digest:undefined}:a);
+  assert.equal(findStableInstaller({...release,assets:absent},repo),null,'Missing critical digest must block: '+critical);
 }
 const wrongDigest=assets.map(a=>a.name==='Sontriqa-Setup-x64.exe'?{...a,digest:'sha256:'+('0'.repeat(64))}:a);
 assert.equal(findStableInstaller({...release,assets:wrongDigest},repo),null,'modified installer must never be linked');

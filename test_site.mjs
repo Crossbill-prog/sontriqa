@@ -8,6 +8,8 @@ assert.match(validator,/release\.draft \|\| release\.prerelease/);
 assert.ok(validator.includes("const approvedStableTag='v1.0.0'"),'Only frozen accepted stable version is eligible');
 assert.match(validator,/approvedInstallerSHA256='de70bd9db13705d9f41bbc0db98e84471629fa3f333b0c6478a15feafb7c4254'/);
 assert.ok(validator.includes('installer.digest'),'Public download must validate GitHub SHA-256');
+assert.ok(validator.includes("approvedManifestSHA256='bd095a956e9652670006f7bae7ee7685767ca236237506592df37538151ee227'"));
+assert.ok(validator.includes("approvedMplSourceSHA256='a335861acf87a44528af2be1fccca202962f18b2443651abe4a9498a40c8b3bf'"));
 for (const required of [
   'Sontriqa-Setup-x64.exe','Sontriqa-Setup-x64.exe.sig','SHA256SUMS.txt',
   'latest.json','THIRD_PARTY_DEPENDENCIES_GENERATED.txt',

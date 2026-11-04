@@ -6,6 +6,9 @@
 (() => {
   const approvedStableTag='v1.0.0';
   const approvedInstallerSHA256='de70bd9db13705d9f41bbc0db98e84471629fa3f333b0c6478a15feafb7c4254';
+  // Hashes taken from the exact privately verified release draft and bridge.
+  const approvedManifestSHA256='bd095a956e9652670006f7bae7ee7685767ca236237506592df37538151ee227';
+  const approvedMplSourceSHA256='a335861acf87a44528af2be1fccca202962f18b2443651abe4a9498a40c8b3bf';
   const expectedAssets = Object.freeze({
     'Sontriqa-Setup-x64.exe': 750000,
     'Sontriqa-Setup-x64.exe.sig': 60,
@@ -36,6 +39,8 @@
     }
     const installer=entries['Sontriqa-Setup-x64.exe'];
     if (installer.digest!==`sha256:${approvedInstallerSHA256}`) return null;
+    if (entries['latest.json'].digest!==`sha256:${approvedManifestSHA256}`) return null;
+    if (entries['SELECTORS_0.38.0_MPL_SOURCE.zip'].digest!==`sha256:${approvedMplSourceSHA256}`) return null;
     return installer;
   }
   window.SontriqaReleaseValidator=Object.freeze({findStableInstaller, expectedAssets, approvedStableTag, approvedInstallerSHA256});
