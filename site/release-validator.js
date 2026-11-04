@@ -9,10 +9,11 @@
   // signed, verified, and explicitly approved with a replacement SHA-256.
   const releaseHold=true;
   const approvedStableTag='v1.0.0';
-  const approvedInstallerSHA256='de70bd9db13705d9f41bbc0db98e84471629fa3f333b0c6478a15feafb7c4254';
-  // Hashes taken from the exact privately verified release draft and bridge.
-  const approvedManifestSHA256='bd095a956e9652670006f7bae7ee7685767ca236237506592df37538151ee227';
-  const approvedMplSourceSHA256='a335861acf87a44528af2be1fccca202962f18b2443651abe4a9498a40c8b3bf';
+  const approvedInstallerSHA256='PENDING_REBUILT_WINDOWS_INSTALLER';
+  // Never preapprove the former vulnerable EXE, manifest or source archive.
+  // Replace these PENDING placeholders only after a NEW signed Windows acceptance.
+  const approvedManifestSHA256='PENDING_SIGNED_MANIFEST';
+  const approvedMplSourceSHA256='PENDING_FULL_MPL_SOURCE_ARCHIVE';
   // VULNERABILITY HOLD: original 1.0.0 EXE (tauri@2.11.1) is affected by
   // GHSA-w28w-mhc8-qvjv (patched in tauri >= 2.11.6). The owner-accepted
   // original hash is kept ONLY as an audit record. The download page must NOT
@@ -48,6 +49,12 @@
       if (!asset || asset.state!=='uploaded' || !Number.isSafeInteger(asset.size) ||
           asset.size<minSize || asset.browser_download_url!==prefix+name) return null;
     }
+    // No accidental release even if both independent UI holds are lifted:
+    // all three EXACT hashes must be explicitly replaced after full acceptance.
+    if (![approvedInstallerSHA256,approvedManifestSHA256,approvedMplSourceSHA256]
+       .every(hash=>/^[a-f0-9]{64}$/.test(hash))) return null;
+    // The formerly accepted 1.0 installer used vulnerable tauri@2.11.1.
+    if (approvedInstallerSHA256==='de70bd9db13705d9f41bbc0db98e84471629fa3f333b0c6478a15feafb7c4254') return null;
     const installer=entries['Sontriqa-Setup-x64.exe'];
     if (installer.digest!==`sha256:${approvedInstallerSHA256}`) return null;
     if (entries['latest.json'].digest!==`sha256:${approvedManifestSHA256}`) return null;
