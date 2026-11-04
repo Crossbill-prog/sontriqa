@@ -1,7 +1,11 @@
 'use strict';
-// Read-only gating of the public download button. Presence/size/URL checks
-// DO NOT verify Ed25519 or replace the signed installer release audit.
+// Read-only gating of the public download button. GitHub's sha256 digest is
+// compared to the EXACT owner-accepted Windows installer from CI #41890999313.
+// This is not an independent Ed25519 verification or a legal release approval.
+// Approve each future stable version explicitly, including its tested EXE hash.
 (() => {
+  const approvedStableTag='v1.0.0';
+  const approvedInstallerSHA256='de70bd9db13705d9f41bbc0db98e84471629fa3f333b0c6478a15feafb7c4254';
   const expectedAssets = Object.freeze({
     'Sontriqa-Setup-x64.exe': 750000,
     'Sontriqa-Setup-x64.exe.sig': 60,
@@ -30,7 +34,9 @@
       if (!asset || asset.state!=='uploaded' || !Number.isSafeInteger(asset.size) ||
           asset.size<minSize || asset.browser_download_url!==prefix+name) return null;
     }
-    return entries['Sontriqa-Setup-x64.exe'];
+    const installer=entries['Sontriqa-Setup-x64.exe'];
+    if (installer.digest!==`sha256:${approvedInstallerSHA256}`) return null;
+    return installer;
   }
-  window.SontriqaReleaseValidator=Object.freeze({findStableInstaller, expectedAssets});
+  window.SontriqaReleaseValidator=Object.freeze({findStableInstaller, expectedAssets, approvedStableTag, approvedInstallerSHA256});
 })();

@@ -5,12 +5,15 @@ import vm from 'node:vm';
 const source=fs.readFileSync('site/release-validator.js','utf8');
 const context={window:{}};
 vm.runInNewContext(source,context,{timeout:2000});
-const {findStableInstaller,expectedAssets}=context.window.SontriqaReleaseValidator;
+const {findStableInstaller,expectedAssets,approvedStableTag,approvedInstallerSHA256}=context.window.SontriqaReleaseValidator;
 const repo='Crossbill-prog/sontriqa';
 const tag='v1.0.0';
+assert.equal(approvedStableTag,tag);
+assert.equal(approvedInstallerSHA256,'de70bd9db13705d9f41bbc0db98e84471629fa3f333b0c6478a15feafb7c4254');
 const base='https://github.com/'+repo+'/releases/download/'+tag+'/';
 const assets=Object.entries(expectedAssets).map(([name,minSize])=>({
-  name,state:'uploaded',size:minSize+1000,browser_download_url:base+name
+  name,state:'uploaded',size:minSize+1000,browser_download_url:base+name,
+  ...(name==='Sontriqa-Setup-x64.exe'?{digest:'sha256:'+approvedInstallerSHA256}:{})
 }));
 const release={draft:false,prerelease:false,tag_name:tag,assets};
 assert.ok(Object.hasOwn(expectedAssets,'SELECTORS_0.38.0_MPL_SOURCE.zip'),'stable 1.0 must require its exact MPL source');
@@ -21,6 +24,12 @@ for (const [name] of Object.entries(expectedAssets)) {
   const sparse={...release,assets:assets.filter(asset=>asset.name!==name)};
   assert.equal(findStableInstaller(sparse,repo),null,'Missing required stable asset must block: '+name);
 }
+const wrongDigest=assets.map(a=>a.name==='Sontriqa-Setup-x64.exe'?{...a,digest:'sha256:'+('0'.repeat(64))}:a);
+assert.equal(findStableInstaller({...release,assets:wrongDigest},repo),null,'modified installer must never be linked');
+const missingDigest=assets.map(a=>a.name==='Sontriqa-Setup-x64.exe'?{...a,digest:undefined}:a);
+assert.equal(findStableInstaller({...release,assets:missingDigest},repo),null,'unverified GitHub asset digest must block');
+assert.equal(findStableInstaller({...release,tag_name:'v1.0.1'},repo),null,'next stable release requires separate hash acceptance');
+assert.equal(findStableInstaller({...release,tag_name:'1.0.0'},repo),null,'only approved exact tag may be linked');
 assert.equal(findStableInstaller({...release,draft:true},repo),null);
 assert.equal(findStableInstaller({...release,prerelease:true},repo),null);
 const oldMpl=assets.filter(asset=>asset.name!=='SELECTORS_0.38.0_MPL_SOURCE.zip');
