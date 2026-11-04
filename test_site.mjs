@@ -25,6 +25,8 @@ const wf=fs.readFileSync('.github/workflows/pages.yml','utf8');
 assert.match(wf,/actions\/deploy-pages@v4/);
 assert.ok(wf.includes('name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}'), 'Pages upload artifact must be unique per attempt');
 assert.ok(wf.includes('artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}'), 'Pages deploy must target the same unique artifact');
+assert.ok(wf.includes('old=6410c9d29e30a0134ab082c8cecf934bf1162ae3'), 'Recovery must target only known stuck Pages SHA');
+assert.ok(wf.includes('pages/deployments/$old/cancel'), 'Recovery must use official Pages cancellation API');
 const result=spawnSync(process.execPath,['scripts/generate-site-config.mjs','Crossbill-prog/sontriqa','site/config.js'],{encoding:'utf8'});
 assert.equal(result.status,0,result.stderr);
 assert.match(fs.readFileSync('site/config.js','utf8'),/Crossbill-prog\/sontriqa/);

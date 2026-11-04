@@ -45,6 +45,24 @@ jobs:
           # Retrying one job must not generate duplicate github-pages artifacts.
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: site
+      # One-time recovery for the 4 Nov 2026 GitHub Pages backend deployment
+      # that stayed in updating_pages after Actions timed out. No release asset
+      # or repository branch is changed by this targeted cancellation.
+      - name: Release one known stuck Pages deployment before deploying
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          old=6410c9d29e30a0134ab082c8cecf934bf1162ae3
+          status="$(gh api "repos/${{ github.repository }}/pages/deployments/$old" --jq '.status' 2>/dev/null || true)"
+          case "$status" in
+            updating_pages|in_progress|pending|queued)
+              gh api --method POST "repos/${{ github.repository }}/pages/deployments/$old/cancel"
+              echo "Cancelled only known stuck Pages deployment: $old"
+              ;;
+            *)
+              echo "No active stale Pages deployment: ${status:-not-found}"
+              ;;
+          esac
       - id: deployment
         uses: actions/deploy-pages@v4
         with:
