@@ -22,6 +22,10 @@ for (const required of [
 ]) assert.ok(validator.includes(required),'Missing required stable release asset: '+required);
 assert.match(fs.readFileSync('site/index.html','utf8'),/src="release-validator\.js"/);
 assert.match(fs.readFileSync('site/index.html','utf8'),/aria-disabled="true"/);
+const advisoryWarning=fs.readFileSync('site/index.html','utf8');
+assert.ok(advisoryWarning.includes('Публичная RC.18 использует Tauri 2.11.5'),'Public RC must be clearly marked as affected by advisory');
+assert.ok(advisoryWarning.includes('GHSA-w28w-mhc8-qvjv'),'Advisory should be linked');
+assert.ok(advisoryWarning.includes('в Sontriqa не подтверждена'),'No claim of proven exploitability');
 const wf=fs.readFileSync('.github/workflows/pages.yml','utf8');
 assert.match(wf,/actions\/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e/);
 assert.ok(wf.includes('name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}'), 'Pages upload artifact must be unique per attempt');

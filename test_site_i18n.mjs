@@ -43,11 +43,15 @@ function createMock(saved) {
   vm.runInNewContext(fs.readFileSync('site/i18n.js','utf8'),sandbox,{filename:'site/i18n.js'});
   return {win,doc,cache,nodes,elements,flags};
 }
+const publicRcWarning="Публичная RC.18 использует Tauri 2.11.5, входящую в диапазон известной уязвимости GHSA-w28w-mhc8-qvjv. Возможность эксплуатации именно в Sontriqa не подтверждена; для новых установок дождитесь исправленной стабильной сборки.";
+const publicRcWarningEnglish="The public RC.18 uses Tauri 2.11.5, which falls within the affected versions for GHSA-w28w-mhc8-qvjv. Exploitability in Sontriqa is not established; for new installations, wait for the patched stable build.";
 const first=createMock();
 assert.equal(first.win.SontriqaI18n.language,'ru');
 assert.equal(first.nodes[0].nodeValue,'Твой звук —');
 first.win.SontriqaI18n.setLanguage('en');
 assert.equal(first.win.SontriqaI18n.language,'en');
+assert.equal(first.win.SontriqaI18n.translate(publicRcWarning),publicRcWarningEnglish,'Security notice must translate into English');
+assert.equal(first.win.SontriqaI18n.translate('Подробнее'),'Advisory details');
 assert.equal(first.doc.documentElement.lang,'en');
 assert.equal(first.nodes[0].nodeValue,'Your sound —');
 assert.equal(first.nodes[1].nodeValue,'your rules');

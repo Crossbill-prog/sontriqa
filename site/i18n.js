@@ -17,6 +17,8 @@
     'Проверяем выпуск': 'Release in testing',
     'Все версии': 'All releases',
     'Стабильный установщик пока не опубликован.': 'The stable installer has not been released yet.',
+    "Публичная RC.18 использует Tauri 2.11.5, входящую в диапазон известной уязвимости GHSA-w28w-mhc8-qvjv. Возможность эксплуатации именно в Sontriqa не подтверждена; для новых установок дождитесь исправленной стабильной сборки.": "The public RC.18 uses Tauri 2.11.5, which falls within the affected versions for GHSA-w28w-mhc8-qvjv. Exploitability in Sontriqa is not established; for new installations, wait for the patched stable build.",
+    'Подробнее': 'Advisory details',
     'Скачивание готовится или GitHub временно недоступен. Проверьте историю выпусков.': 'The download is being prepared or GitHub is temporarily unavailable. Check the release history.',
     'Windows 10/11 · 64-bit · один установщик EXE · без регистрации': 'Windows 10/11 · 64-bit · one EXE installer · no sign-up',
     'МАРШРУТИЗАЦИЯ': 'AUDIO ROUTING',
