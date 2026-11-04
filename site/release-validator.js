@@ -10,7 +10,7 @@
     'THIRD_PARTY_DEPENDENCIES_GENERATED.txt': 100,
     'ENGINE_SOURCE_SHA256.txt': 65,
     'ENGINE_UPSTREAM_PROVENANCE.json': 100,
-    'SELECTORS_0.36.1_MPL_SOURCE.zip': 1000,
+    'SELECTORS_0.38.0_MPL_SOURCE.zip': 1000,
     'MPL_SOURCE_AVAILABILITY.txt': 100
   });
   function findStableInstaller(release, repo) {
