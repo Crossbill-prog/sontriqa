@@ -55,9 +55,11 @@ jobs:
           old=6410c9d29e30a0134ab082c8cecf934bf1162ae3
           status="$(gh api "repos/${{ github.repository }}/pages/deployments/$old" --jq '.status' 2>/dev/null || true)"
           case "$status" in
-            updating_pages|in_progress|pending|queued)
+            updating_pages|in_progress|pending|queued|deployment_cancelled)
               gh api --method POST "repos/${{ github.repository }}/pages/deployments/$old/cancel"
-              echo "Cancelled only known stuck Pages deployment: $old"
+              echo "Asked Pages API to cancel stuck deployment: $old (status was $status)"
+              # Give GitHub's Pages backend a moment to release its deployment lock.
+              sleep 15
               ;;
             *)
               echo "No active stale Pages deployment: ${status:-not-found}"
