@@ -36,6 +36,7 @@ jobs:
         run: |
           node test_site.mjs
           node test_site_i18n.mjs
+          node test_site_release_guard.mjs
       - uses: actions/configure-pages@v5
         with:
           enablement: true
