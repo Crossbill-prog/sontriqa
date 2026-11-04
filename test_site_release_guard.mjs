@@ -12,6 +12,7 @@ vm.runInNewContext(source,production,{timeout:2000});
 vm.runInNewContext(source.replace('const releaseHold=true;','const releaseHold=false;'),context,{timeout:2000});
 const {findStableInstaller,inspectStableReleaseAssets,expectedAssets,approvedStableTag,approvedInstallerSHA256,securityFixApproved}=context.window.SontriqaReleaseValidator;
 assert.equal(securityFixApproved,false,'Known vulnerable Tauri 2.11.1 cannot be an approved public stable installer');
+assert.match(source,/if\(releaseHold \|\| !securityFixApproved\)return null/,'releaseHold must participate in the real download decision');
 const repo='Crossbill-prog/sontriqa';
 const tag='v1.0.0';
 assert.equal(approvedStableTag,tag);
