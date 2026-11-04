@@ -10,7 +10,7 @@ assert.ok(validator.includes("const approvedStableTag='v1.0.0'"),'Only frozen ac
 assert.match(validator,/approvedInstallerSHA256='de70bd9db13705d9f41bbc0db98e84471629fa3f333b0c6478a15feafb7c4254'/);
 assert.ok(validator.includes('installer.digest'),'Public download must validate GitHub SHA-256');
 assert.ok(validator.includes('securityFixApproved=false'),'Known-vulnerable Tauri stable must be blocked');
-assert.ok(validator.includes('if(!securityFixApproved)return null;'),'Blocked release must not open download link');
+assert.ok(validator.includes('if(releaseHold || !securityFixApproved)return null;'),'Both publication and security holds must block download');
 assert.ok(validator.includes("approvedManifestSHA256='bd095a956e9652670006f7bae7ee7685767ca236237506592df37538151ee227'"));
 assert.ok(validator.includes("approvedMplSourceSHA256='a335861acf87a44528af2be1fccca202962f18b2443651abe4a9498a40c8b3bf'"));
 for (const required of [
@@ -35,7 +35,7 @@ for(const [pkg,ver] of [["cssparser","0.37.0"],["cssparser-macros","0.7.1"],["dt
   assert.ok(mplPage.includes(`https://static.crates.io/crates/${pkg}/${pkg}-${ver}.crate`),'Exact MPL source archive link missing: '+pkg);
   assert.ok(mplPage.includes(`https://docs.rs/crate/${pkg}/${ver}/source/`),'Browsable MPL source missing: '+pkg);
 }
-assert.ok(mplPage.includes('a335861acf87a44528af2be1fccca202962f18b2443651abe4a9498a40c8b3bf'),'Selectors accepted source hash missing');
+assert.ok(mplPage.includes('Окончательная контрольная сумма SHA-256 ещё не утверждена'),'Do not publish an obsolete MPL archive hash as final');
 assert.ok(mplPage.includes('This is a technical availability statement'));
 assert.ok(fs.readFileSync('site/index.html','utf8').includes('href="open-source.html"'));
 assert.ok(fs.readFileSync('site/privacy.html','utf8').includes('href="open-source.html"'));
