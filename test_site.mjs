@@ -22,11 +22,17 @@ for (const required of [
 assert.match(fs.readFileSync('site/index.html','utf8'),/src="release-validator\.js"/);
 assert.match(fs.readFileSync('site/index.html','utf8'),/aria-disabled="true"/);
 const wf=fs.readFileSync('.github/workflows/pages.yml','utf8');
-assert.match(wf,/actions\/deploy-pages@v4/);
+assert.match(wf,/actions\/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e/);
 assert.ok(wf.includes('name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}'), 'Pages upload artifact must be unique per attempt');
 assert.ok(wf.includes('artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}'), 'Pages deploy must target the same unique artifact');
-assert.ok(wf.includes('old=6410c9d29e30a0134ab082c8cecf934bf1162ae3'), 'Recovery must target only known stuck Pages SHA');
-assert.ok(wf.includes('pages/deployments/$old/cancel'), 'Recovery must use official Pages cancellation API');
+assert.doesNotMatch(wf,/pages\/deployments\/.*\/cancel/,'Do not keep cancelling a retired historical Pages deployment');
+for(const action of [
+  'actions/checkout@11d5960a326750d5838078e36cf38b85af677262',
+  'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020',
+  'actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b',
+  'actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa',
+  'actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e'
+]) assert.ok(wf.includes(action),'Pages Action must be pinned to a reviewed immutable commit: '+action);
 const result=spawnSync(process.execPath,['scripts/generate-site-config.mjs','Crossbill-prog/sontriqa','site/config.js'],{encoding:'utf8'});
 assert.equal(result.status,0,result.stderr);
 assert.match(fs.readFileSync('site/config.js','utf8'),/Crossbill-prog\/sontriqa/);
