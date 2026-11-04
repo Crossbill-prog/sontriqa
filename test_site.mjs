@@ -23,6 +23,8 @@ assert.match(fs.readFileSync('site/index.html','utf8'),/src="release-validator\.
 assert.match(fs.readFileSync('site/index.html','utf8'),/aria-disabled="true"/);
 const wf=fs.readFileSync('.github/workflows/pages.yml','utf8');
 assert.match(wf,/actions\/deploy-pages@v4/);
+assert.ok(wf.includes('name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}'), 'Pages upload artifact must be unique per attempt');
+assert.ok(wf.includes('artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}'), 'Pages deploy must target the same unique artifact');
 const result=spawnSync(process.execPath,['scripts/generate-site-config.mjs','Crossbill-prog/sontriqa','site/config.js'],{encoding:'utf8'});
 assert.equal(result.status,0,result.stderr);
 assert.match(fs.readFileSync('site/config.js','utf8'),/Crossbill-prog\/sontriqa/);
