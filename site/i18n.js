@@ -9,6 +9,7 @@
     'Возможности': 'Features',
     'Как работает': 'How it works',
     'Автор': 'Developer',
+    'Исходники MPL-2.0': 'MPL-2.0 source code',
     'Бесплатная программа для Windows': 'Free app for Windows',
     'Твой звук —': 'Your sound —',
     'твои правила': 'your rules',

@@ -23,6 +23,15 @@ assert.match(wf,/actions\/deploy-pages@v4/);
 const result=spawnSync(process.execPath,['scripts/generate-site-config.mjs','Crossbill-prog/sontriqa','site/config.js'],{encoding:'utf8'});
 assert.equal(result.status,0,result.stderr);
 assert.match(fs.readFileSync('site/config.js','utf8'),/Crossbill-prog\/sontriqa/);
+const mplPage=fs.readFileSync('site/open-source.html','utf8');
+for(const [pkg,ver] of [["cssparser","0.37.0"],["cssparser-macros","0.7.1"],["dtoa-short","0.3.5"],["option-ext","0.2.0"],["selectors","0.38.0"]]) {
+  assert.ok(mplPage.includes(`https://static.crates.io/crates/${pkg}/${pkg}-${ver}.crate`),'Exact MPL source archive link missing: '+pkg);
+  assert.ok(mplPage.includes(`https://docs.rs/crate/${pkg}/${ver}/source/`),'Browsable MPL source missing: '+pkg);
+}
+assert.ok(mplPage.includes('a335861acf87a44528af2be1fccca202962f18b2443651abe4a9498a40c8b3bf'),'Selectors accepted source hash missing');
+assert.ok(mplPage.includes('This is a technical availability statement'));
+assert.match(fs.readFileSync('site/index.html','utf8'),/href="open-source\\.html"/);
+assert.match(fs.readFileSync('site/privacy.html','utf8'),/href="open-source\\.html"/);
 const privacy=fs.readFileSync('site/privacy.html','utf8');
 const rootPrivacy=fs.readFileSync('privacy.html','utf8');
 const updaterNotice=privacy.match(/<p>(При запуске подписанной Sontriqa[^<]+)<\/p>/)?.[1];
