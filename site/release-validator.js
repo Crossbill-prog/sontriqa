@@ -55,7 +55,7 @@
     return installer;
   }
   function findStableInstaller(release,repo){
-    if(!securityFixApproved)return null;
+    if(releaseHold || !securityFixApproved)return null;
     return inspectStableReleaseAssets(release,repo);
   }
   window.SontriqaReleaseValidator=Object.freeze({
