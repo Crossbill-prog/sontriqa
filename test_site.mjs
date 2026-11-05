@@ -10,7 +10,7 @@ assert.equal((app.match(/releases\.hidden = false;/g)||[]).length,1,
 assert.ok(app.indexOf('releases.hidden = false;')>app.indexOf('if (!asset) return;'),
  'Expose release history only after signed stable EXE and all required assets pass the hold guard');
 const css=fs.readFileSync('site/styles.css','utf8');
-assert.match(css,/#releases\\[hidden\\]\\s*\\{\\s*display:\\s*none\\s*!important\\s*\\}/,
+assert.ok(css.includes('#releases[hidden]{display:none!important}'),
  'CSS display:inline-flex must not override HTML hidden release-history shortcut');
 assert.ok(app.indexOf('releases.href =')>app.indexOf('if (!asset) return;'),
  'The vulnerable RC.18 release-history URL must never be set until a fully approved stable installer is available');
