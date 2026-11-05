@@ -1,14 +1,9 @@
 name: 03 — Deploy official download page (GitHub Pages)
 
+# Legacy GitHub Pages recovery only; production site now uses Cloudflare Pages
+# Git integration on main. Manual fallback must not run automatically on push.
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
-    paths:
-      - 'site/**'
-      - 'scripts/generate-site-config.mjs'
-      - 'test_site*.mjs'
-      - '.github/workflows/pages.yml'
 
 permissions:
   contents: read

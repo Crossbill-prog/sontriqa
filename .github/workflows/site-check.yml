@@ -8,6 +8,7 @@ on:
       - 'site/**'
       - 'privacy.html'
       - 'scripts/generate-site-config.mjs'
+      - 'scripts/build-cloudflare-pages.mjs'
       - 'test_site*.mjs'
       - '.github/workflows/site-check.yml'
       - '.github/workflows/pages.yml'
@@ -31,10 +32,5 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: '22'
-      - name: Generate public repository configuration
-        run: node scripts/generate-site-config.mjs "${{ github.repository }}" site/config.js
-      - name: Verify download hold, signed release hashes, privacy and RU/EN
-        run: |
-          node test_site.mjs
-          node test_site_i18n.mjs
-          node test_site_release_guard.mjs
+      - name: Run the exact Cloudflare Pages static build and safety validations
+        run: node scripts/build-cloudflare-pages.mjs
