@@ -33,6 +33,8 @@ const assets=Object.entries(expectedAssets).map(([name,minSize])=>({
 const release={draft:false,prerelease:false,tag_name:tag,assets};
 assert.equal(production.window.SontriqaReleaseValidator.findStableInstaller(release,repo),null,'production must not link vulnerable 2.11.1 binary even if complete release is accidentally published');
 assert.ok(Object.hasOwn(expectedAssets,'SELECTORS_0.38.0_MPL_SOURCE.zip'),'stable 1.0 must require its exact MPL source');
+assert.ok(Object.hasOwn(expectedAssets,'BUILD_PROVENANCE.json'),'stable must include filename-rebased cryptographic build evidence');
+assert.ok(Object.hasOwn(expectedAssets,'RELEASE_NOTES_RU_EN.md'),'stable must include reviewed bilingual release notes');
 assert.ok(!Object.hasOwn(expectedAssets,'SELECTORS_0.36.1_MPL_SOURCE.zip'),'RC.18 MPL source cannot substitute for stable 1.0');
 assert.equal(findStableInstaller(release,repo)?.name,'Sontriqa-Setup-x64.exe','isolated candidate demonstrates how explicit new approval would work');
 assert.equal(production.window.SontriqaReleaseValidator.inspectStableReleaseAssets(release,repo),null,'production inspection must refuse pending hashes, independently of button hold');
