@@ -11,13 +11,15 @@ const setStatusMessage = (message) => {
 setStatusMessage('Стабильный установщик пока не опубликован.');
 const releases = document.getElementById('releases');
 if (/^[\w.-]+\/[\w.-]+$/.test(repo)) {
-  releases.hidden = false;
+  // Keep the legacy vulnerable RC.18 release-history shortcut hidden until
+  // the complete accepted stable release passes the separate public guard.
   releases.href = `https://github.com/${repo}/releases`;
   fetch(`https://api.github.com/repos/${repo}/releases/latest`, {headers: {'Accept':'application/vnd.github+json'}, credentials:'omit'})
     .then(response => {if (!response.ok) throw new Error('Not published'); return response.json();})
     .then(release => {
       const asset = window.SontriqaReleaseValidator?.findStableInstaller(release,repo);
       if (!asset) return;
+      releases.hidden = false;
       button.href = asset.browser_download_url;
       button.textContent = window.SontriqaI18n?.language === 'en' ? 'Download Sontriqa' : 'Скачать Sontriqa';
       button.classList.remove('disabled');
