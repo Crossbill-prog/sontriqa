@@ -63,7 +63,9 @@ const rootPrivacy=fs.readFileSync('privacy.html','utf8');
 const languageNotice=privacy.match(/<p>(На странице скачивания[^<]+)<\/p>/)?.[1];
 assert.ok(languageNotice?.includes('localStorage'),'Document saved local language preference on public privacy page');
 assert.ok(rootPrivacy.includes('localStorage'),'Document stored language preference on stand-alone privacy page');
-assert.ok(fs.readFileSync('site/i18n.js','utf8').includes(JSON.stringify(languageNotice)+': '),
+const i18nPrivacySource=fs.readFileSync('site/i18n.js','utf8');
+assert.ok(i18nPrivacySource.includes("'"+languageNotice+"': ") ||
+          i18nPrivacySource.includes(JSON.stringify(languageNotice)+': '),
  'Website English localization must translate the exact new privacy notice');
 
 const updaterNotice=privacy.match(/<p>(При запуске подписанной Sontriqa[^<]+)<\/p>/)?.[1];
