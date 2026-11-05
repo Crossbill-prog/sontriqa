@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 const app=fs.readFileSync('site/app.js','utf8');
 const validator=fs.readFileSync('site/release-validator.js','utf8');
-assert.ok(validator.includes('const releaseHold=true;'),'no stable 1.0 download until patched build accepted');
+assert.ok(validator.includes('const releaseHold=true;'),'No stable 1.0 download before legal/publication approval');
 assert.match(app,/SontriqaReleaseValidator\?\.findStableInstaller/);
 assert.equal((app.match(/releases\.hidden = false;/g)||[]).length,1,
  'Release history must not be exposed while only vulnerable RC18 is available');
@@ -12,13 +12,13 @@ assert.ok(app.indexOf('releases.hidden = false;')>app.indexOf('if (!asset) retur
 
 assert.match(validator,/release\.draft \|\| release\.prerelease/);
 assert.ok(validator.includes("const approvedStableTag='v1.0.0'"),'Only frozen accepted stable version is eligible');
-assert.ok(validator.includes("approvedInstallerSHA256='PENDING_REBUILT_WINDOWS_INSTALLER'"));
+assert.ok(validator.includes("approvedInstallerSHA256='ebcaa560685f16bc6e12f724e47999ce9cb9989212c7681e4c50d590afeada6b'"), 'Accepted signed EXE SHA must be frozen');
 assert.ok(validator.includes('de70bd9db13705d9f41bbc0db98e84471629fa3f333b0c6478a15feafb7c4254'),'Known vulnerable installer must remain explicitly denied');
 assert.ok(validator.includes('installer.digest'),'Public download must validate GitHub SHA-256');
-assert.ok(validator.includes('securityFixApproved=false'),'Known-vulnerable Tauri stable must be blocked');
+assert.ok(validator.includes('securityFixApproved=true'),'Patched Tauri has passed cryptographic and Windows acceptance');
 assert.ok(validator.includes('if(releaseHold || !securityFixApproved)return null;'),'Both publication and security holds must block download');
-assert.ok(validator.includes("approvedManifestSHA256='PENDING_SIGNED_MANIFEST'"));
-assert.ok(validator.includes("approvedMplSourceSHA256='PENDING_FULL_MPL_SOURCE_ARCHIVE'"));
+assert.ok(validator.includes("approvedManifestSHA256='3fb48fade9830521256666b70d43e9ff59a9baaffae8b1d6960254dcdb1bbbfd'"));
+assert.ok(validator.includes("approvedMplSourceSHA256='44a068655cada9bf8746a8a6e853569380c4e4ec2c7b6306e206d1731b83d09b'"));
 for (const required of [
   'Sontriqa-Setup-x64.exe','Sontriqa-Setup-x64.exe.sig','SHA256SUMS.txt',
   'latest.json','THIRD_PARTY_DEPENDENCIES_GENERATED.txt',
