@@ -30,7 +30,9 @@
     'ENGINE_SOURCE_SHA256.txt': 65,
     'ENGINE_UPSTREAM_PROVENANCE.json': 100,
     'SELECTORS_0.38.0_MPL_SOURCE.zip': 1000,
-    'MPL_SOURCE_AVAILABILITY.txt': 100
+    'MPL_SOURCE_AVAILABILITY.txt': 100,
+    'BUILD_PROVENANCE.json': 200,
+    'RELEASE_NOTES_RU_EN.md': 200
   });
   function inspectStableReleaseAssets(release, repo) {
     if (!release || release.draft || release.prerelease ||
