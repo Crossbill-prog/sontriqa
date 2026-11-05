@@ -1,0 +1,40 @@
+name: 02 — Validate official Sontriqa site (no deployment)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'site/**'
+      - 'privacy.html'
+      - 'scripts/generate-site-config.mjs'
+      - 'test_site*.mjs'
+      - '.github/workflows/site-check.yml'
+      - '.github/workflows/pages.yml'
+
+# Test runner uses read-only code checkout. It never receives Pages
+# deployment permissions or uses signing keys, and it never publishes.
+permissions:
+  contents: read
+
+concurrency:
+  group: site-validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Verify 11-asset release gate, RU/EN, privacy and Pages config
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Generate public repository configuration
+        run: node scripts/generate-site-config.mjs "${{ github.repository }}" site/config.js
+      - name: Verify download hold, signed release hashes, privacy and RU/EN
+        run: |
+          node test_site.mjs
+          node test_site_i18n.mjs
+          node test_site_release_guard.mjs
