@@ -24,6 +24,22 @@
   // The security decision is POSITIVE for this exact patched signed binary.
   // Legal/publication approval is separate and still blocked by releaseHold.
   const securityFixApproved=true;
+  // Frozen SHA-256 inventory: exact independently reviewed private
+  // Sontriqa_1.0.0_Private_Release_Review_Updated_Notes.zip (11 files).
+  // All assets, not only the installer, must match the approved bytes.
+  const approvedAssetSHA256 = Object.freeze({
+    'BUILD_PROVENANCE.json': '5b00f8b91c67665a97f188e77b61517ef15670136c5ac17877bf9835dbe600a1',
+    'ENGINE_SOURCE_SHA256.txt': '341339caa70068993ea35b0e93d61c2c5af6b16e4917c9f97d558e404cfc55fe',
+    'ENGINE_UPSTREAM_PROVENANCE.json': 'b8e3ce18e409f2c582d31868ce09ac11a5cf54c5d7cb10f6249f44f0b7674390',
+    'MPL_SOURCE_AVAILABILITY.txt': '0de3add643d5ba3b1e65c27d99a734d3d8bc2950258fb394564ce904945c454d',
+    'RELEASE_NOTES_RU_EN.md': 'a177d0e5fccfa69eae33b5abe39dbe8a58fe031b93352ff95316b767e5d0368c',
+    'SELECTORS_0.38.0_MPL_SOURCE.zip': approvedMplSourceSHA256,
+    'SHA256SUMS.txt': '0d5e7dc180a1959272bff32cb5675a4ecc8bccb4e5b50941a886442b99af7d31',
+    'Sontriqa-Setup-x64.exe': approvedInstallerSHA256,
+    'Sontriqa-Setup-x64.exe.sig': '4141c4466c17d776a28dac75bd4cf4d457740a5d292af969d86c4477f1074990',
+    'THIRD_PARTY_DEPENDENCIES_GENERATED.txt': '8e55da0b1aeb7fc72d96ce975d0e84113734566370010bd87a0ae04b82415f06',
+    'latest.json': approvedManifestSHA256
+  });
   const expectedAssets = Object.freeze({
     'Sontriqa-Setup-x64.exe': 750000,
     'Sontriqa-Setup-x64.exe.sig': 60,
@@ -52,7 +68,9 @@
     for (const [name,minSize] of Object.entries(expectedAssets)) {
       const asset=entries[name];
       if (!asset || asset.state!=='uploaded' || !Number.isSafeInteger(asset.size) ||
-          asset.size<minSize || asset.browser_download_url!==prefix+name) return null;
+          asset.size<minSize || asset.browser_download_url!==prefix+name ||
+          !/^[a-f0-9]{64}$/.test(approvedAssetSHA256[name] ?? '') ||
+          asset.digest !== `sha256:${approvedAssetSHA256[name]}`) return null;
     }
     // Fail closed if any exact independently verified source or binary hash
     // changes, even after owner approval of the publication hold.
@@ -72,6 +90,6 @@
   }
   window.SontriqaReleaseValidator=Object.freeze({
     findStableInstaller,inspectStableReleaseAssets,expectedAssets,
-    approvedStableTag,approvedInstallerSHA256,securityFixApproved
+    approvedStableTag,approvedInstallerSHA256,approvedAssetSHA256,securityFixApproved
   });
 })();
