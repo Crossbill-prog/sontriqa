@@ -5,6 +5,11 @@ const app=fs.readFileSync('site/app.js','utf8');
 const validator=fs.readFileSync('site/release-validator.js','utf8');
 assert.ok(validator.includes('const releaseHold=true;'),'no stable 1.0 download until patched build accepted');
 assert.match(app,/SontriqaReleaseValidator\?\.findStableInstaller/);
+assert.equal((app.match(/releases\.hidden = false;/g)||[]).length,1,
+ 'Release history must not be exposed while only vulnerable RC18 is available');
+assert.ok(app.indexOf('releases.hidden = false;')>app.indexOf('if (!asset) return;'),
+ 'Expose release history only after signed stable EXE and all required assets pass the hold guard');
+
 assert.match(validator,/release\.draft \|\| release\.prerelease/);
 assert.ok(validator.includes("const approvedStableTag='v1.0.0'"),'Only frozen accepted stable version is eligible');
 assert.ok(validator.includes("approvedInstallerSHA256='PENDING_REBUILT_WINDOWS_INSTALLER'"));
