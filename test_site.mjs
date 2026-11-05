@@ -9,6 +9,14 @@ assert.equal((app.match(/releases\.hidden = false;/g)||[]).length,1,
  'Release history must not be exposed while only vulnerable RC18 is available');
 assert.ok(app.indexOf('releases.hidden = false;')>app.indexOf('if (!asset) return;'),
  'Expose release history only after signed stable EXE and all required assets pass the hold guard');
+const css=fs.readFileSync('site/styles.css','utf8');
+assert.match(css,/#releases\\[hidden\\]\\s*\\{\\s*display:\\s*none\\s*!important\\s*\\}/,
+ 'CSS display:inline-flex must not override HTML hidden release-history shortcut');
+assert.ok(app.indexOf('releases.href =')>app.indexOf('if (!asset) return;'),
+ 'The vulnerable RC.18 release-history URL must never be set until a fully approved stable installer is available');
+assert.ok(!app.includes('Проверьте историю выпусков.'),
+ 'Error messaging must not promote the known-vulnerable RC.18 release archive');
+
 
 assert.match(validator,/release\.draft \|\| release\.prerelease/);
 assert.ok(validator.includes("const approvedStableTag='v1.0.0'"),'Only frozen accepted stable version is eligible');

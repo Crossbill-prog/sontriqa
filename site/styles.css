@@ -9,3 +9,7 @@
 @media(max-width:550px){.top{flex-wrap:wrap;gap:12px}.top nav{order:3;width:100%;justify-content:flex-start}.site-lang{margin-left:auto}}
 
 .release-security-note{max-width:62ch;margin:9px 0 16px;font-size:12px!important;line-height:1.5;color:var(--muted)!important}.release-security-note a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+
+/* The native HTML hidden attribute must always beat .button{display:inline-flex}.
+   Otherwise the vulnerable RC.18 release-history shortcut is visible. */
+#releases[hidden]{display:none!important}
