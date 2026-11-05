@@ -60,8 +60,12 @@
         !Array.isArray(release.assets)) return null;
     const prefix='https://github.com/'+repo+'/releases/download/'+release.tag_name+'/';
     const entries={};
+    // Reject unexpected assets completely: an accidentally uploaded PRIVATE
+    // reproducibility ZIP or credential file must never appear in an approved
+    // release. GitHub's automatic source-code links are not release.assets.
+    if (release.assets.length !== Object.keys(expectedAssets).length) return null;
     for (const asset of release.assets) {
-      if (!asset || !Object.hasOwn(expectedAssets, asset.name)) continue;
+      if (!asset || !Object.hasOwn(expectedAssets, asset.name)) return null;
       if (Object.hasOwn(entries, asset.name)) return null; // Ambiguous duplicate.
       entries[asset.name]=asset;
     }
