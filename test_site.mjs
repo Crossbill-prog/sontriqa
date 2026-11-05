@@ -60,6 +60,12 @@ assert.ok(fs.readFileSync('site/index.html','utf8').includes('href="open-source.
 assert.ok(fs.readFileSync('site/privacy.html','utf8').includes('href="open-source.html"'));
 const privacy=fs.readFileSync('site/privacy.html','utf8');
 const rootPrivacy=fs.readFileSync('privacy.html','utf8');
+const languageNotice=privacy.match(/<p>(На странице скачивания[^<]+)<\/p>/)?.[1];
+assert.ok(languageNotice?.includes('localStorage'),'Document saved local language preference on public privacy page');
+assert.ok(rootPrivacy.includes('localStorage'),'Document stored language preference on stand-alone privacy page');
+assert.ok(fs.readFileSync('site/i18n.js','utf8').includes(JSON.stringify(languageNotice)+': '),
+ 'Website English localization must translate the exact new privacy notice');
+
 const updaterNotice=privacy.match(/<p>(При запуске подписанной Sontriqa[^<]+)<\/p>/)?.[1];
 assert.ok(updaterNotice,'Public privacy page must disclose automatic GitHub update checks');
 assert.ok(updaterNotice.includes('IP-адрес'),'Disclose network metadata sent to GitHub');
