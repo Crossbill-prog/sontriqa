@@ -63,6 +63,14 @@ assert.equal(inspectStableReleaseAssets({...release,tag_name:'v1.0.0-rc.18'},rep
 assert.equal(inspectStableReleaseAssets({...release,tag_name:'v1.0.0-rc.18',prerelease:false},repo),null);
 assert.equal(inspectStableReleaseAssets(release,'another/sontriqa'),null,'foreign repository must not pass');
 assert.equal(inspectStableReleaseAssets({...release,assets:[...assets,assets[0]]},repo),null,'duplicate names must block');
+assert.equal(inspectStableReleaseAssets({...release,assets:[...assets,{
+  name:'REPRO_LOCKFILES_PRIVATE.zip',state:'uploaded',size:100000,
+  browser_download_url:base+'REPRO_LOCKFILES_PRIVATE.zip',digest:'sha256:'+'0'.repeat(64)
+}]},repo),null,'Unreviewed private lockfile artifact must block the entire release');
+assert.equal(inspectStableReleaseAssets({...release,assets:[...assets,{
+  name:'EXTRA_UNREVIEWED.txt',state:'uploaded',size:1000,
+  browser_download_url:base+'EXTRA_UNREVIEWED.txt',digest:'sha256:'+'0'.repeat(64)
+}]},repo),null,'Unknown release asset must block the exact eleven-file manifest');
 const wrongUrl=assets.map(a=>a.name==='latest.json'?{...a,browser_download_url:'https://example.invalid/latest.json'}:a);
 assert.equal(inspectStableReleaseAssets({...release,assets:wrongUrl},repo),null);
 const wrongState=assets.map(a=>a.name==='Sontriqa-Setup-x64.exe'?{...a,state:'starter'}:a);
