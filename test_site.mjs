@@ -51,7 +51,10 @@ for(const [pkg,ver] of [["cssparser","0.37.0"],["cssparser-macros","0.7.1"],["dt
   assert.ok(mplPage.includes(`https://static.crates.io/crates/${pkg}/${pkg}-${ver}.crate`),'Exact MPL source archive link missing: '+pkg);
   assert.ok(mplPage.includes(`https://docs.rs/crate/${pkg}/${ver}/source/`),'Browsable MPL source missing: '+pkg);
 }
-assert.ok(mplPage.includes('Окончательная контрольная сумма SHA-256 ещё не утверждена'),'Do not publish an obsolete MPL archive hash as final');
+assert.ok(mplPage.includes('44a068655cada9bf8746a8a6e853569380c4e4ec2c7b6306e206d1731b83d09b'),
+ 'Display exact verified five-component MPL source SHA-256 without publishing unreleased download URL');
+assert.ok(mplPage.includes('До публикации стабильной версии ссылка на этот ZIP не действует'),
+ 'MPL source ZIP must not be falsely described as already publicly downloadable');
 assert.ok(mplPage.includes('This is a technical availability statement'));
 assert.ok(fs.readFileSync('site/index.html','utf8').includes('href="open-source.html"'));
 assert.ok(fs.readFileSync('site/privacy.html','utf8').includes('href="open-source.html"'));
