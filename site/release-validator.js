@@ -1,25 +1,28 @@
 'use strict';
-// Read-only gating of the public download button. GitHub's sha256 digest is
-// compared to the EXACT owner-accepted Windows installer from CI #41890999313.
-// This is not an independent Ed25519 verification or a legal release approval.
-// Approve each future stable version explicitly, including its tested EXE hash.
+// Read-only gating of the public download button. GitHub's sha256 digest
+// must match the *new*, patched, owner-accepted NSIS candidate from private
+// CI #41951613118 (SHA256: ebcaa560685f16bc6e12f724e47999ce9cb9989212c7681e4c50d590afeada6b),
+// and only AFTER separate legal/publication approval. DO NOT set the pending
+// values below or remove either hold as part of documentation maintenance.
+// Browser-side checks are NOT an Ed25519 signature verification.
 (() => {
   // The previously accepted installer uses vulnerable Tauri 2.11.1.
-  // Do NOT enable downloads until a new patched Windows binary is built,
-  // signed, verified, and explicitly approved with a replacement SHA-256.
+  // The new patched binary was built, signed and accepted on Windows; do NOT
+  // enable public downloads until explicit legal/publication approval too.
   const releaseHold=true;
   const approvedStableTag='v1.0.0';
   const approvedInstallerSHA256='PENDING_REBUILT_WINDOWS_INSTALLER';
   // Never preapprove the former vulnerable EXE, manifest or source archive.
-  // Replace these PENDING placeholders only after a NEW signed Windows acceptance.
+  // Replace PENDING placeholders only after legal clearance and explicit release
+  // approval of the already signed and Windows-accepted new SHA256.
   const approvedManifestSHA256='PENDING_SIGNED_MANIFEST';
   const approvedMplSourceSHA256='PENDING_FULL_MPL_SOURCE_ARCHIVE';
   // VULNERABILITY HOLD: original 1.0.0 EXE (tauri@2.11.1) is affected by
   // GHSA-w28w-mhc8-qvjv (patched in tauri >= 2.11.6). The owner-accepted
   // original hash is kept ONLY as an audit record. The download page must NOT
   // automatically promote it even if a Release is accidentally published.
-  // Set true ONLY together with independently verified patched EXE hashes,
-  // new signed manifest, rebuilt MPL archive, and renewed Windows acceptance.
+  // Set true only after independent signature/hash checks AND the separate
+  // legal/publication approval; Windows acceptance alone is insufficient.
   const securityFixApproved=false;
   const expectedAssets = Object.freeze({
     'Sontriqa-Setup-x64.exe': 750000,
