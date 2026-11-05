@@ -12,7 +12,7 @@ vm.runInNewContext(source,production,{timeout:2000});
 const candidateSource=source
   .replace('const releaseHold=true;','const releaseHold=false;');
 vm.runInNewContext(candidateSource,context,{timeout:2000});
-const {findStableInstaller,inspectStableReleaseAssets,expectedAssets,approvedStableTag,approvedInstallerSHA256,securityFixApproved}=context.window.SontriqaReleaseValidator;
+const {findStableInstaller,inspectStableReleaseAssets,expectedAssets,approvedStableTag,approvedInstallerSHA256,approvedAssetSHA256,securityFixApproved}=context.window.SontriqaReleaseValidator;
 assert.equal(securityFixApproved,true,'Only patched approved EXE is eligible; publication remains separately held');
 assert.match(source,/if\(releaseHold \|\| !securityFixApproved\)return null/,'releaseHold must participate in the real download decision');
 const repo='Crossbill-prog/sontriqa';
@@ -22,11 +22,10 @@ assert.equal(approvedInstallerSHA256,'ebcaa560685f16bc6e12f724e47999ce9cb9989212
 assert.ok(source.includes('const releaseHold=true;'),'Production must remain legally held');
 assert.equal(production.window.SontriqaReleaseValidator.securityFixApproved,true);
 const base='https://github.com/'+repo+'/releases/download/'+tag+'/';
+assert.equal(Object.keys(approvedAssetSHA256).length,Object.keys(expectedAssets).length);
 const assets=Object.entries(expectedAssets).map(([name,minSize])=>({
   name,state:'uploaded',size:minSize+1000,browser_download_url:base+name,
-  ...(name==='Sontriqa-Setup-x64.exe'?{digest:'sha256:'+approvedInstallerSHA256}:{}),
-  ...(name==='latest.json'?{digest:'sha256:3fb48fade9830521256666b70d43e9ff59a9baaffae8b1d6960254dcdb1bbbfd'}:{}),
-  ...(name==='SELECTORS_0.38.0_MPL_SOURCE.zip'?{digest:'sha256:44a068655cada9bf8746a8a6e853569380c4e4ec2c7b6306e206d1731b83d09b'}:{})
+  digest:'sha256:'+approvedAssetSHA256[name]
 }));
 const release={draft:false,prerelease:false,tag_name:tag,assets};
 assert.equal(production.window.SontriqaReleaseValidator.findStableInstaller(release,repo),null,'production must not link vulnerable 2.11.1 binary even if complete release is accidentally published');
@@ -43,7 +42,7 @@ for (const [name] of Object.entries(expectedAssets)) {
   const sparse={...release,assets:assets.filter(asset=>asset.name!==name)};
   assert.equal(inspectStableReleaseAssets(sparse,repo),null,'Missing required stable asset must block: '+name);
 }
-for (const critical of ['latest.json','SELECTORS_0.38.0_MPL_SOURCE.zip']) {
+for (const critical of Object.keys(expectedAssets)) {
   const tampered=assets.map(a=>a.name===critical?{...a,digest:'sha256:'+('0'.repeat(64))}:a);
   assert.equal(inspectStableReleaseAssets({...release,assets:tampered},repo),null,'Wrong signed manifest or covered-source hash must block: '+critical);
   const absent=assets.map(a=>a.name===critical?{...a,digest:undefined}:a);
