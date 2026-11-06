@@ -69,6 +69,9 @@ assert.ok(fs.readFileSync('site/index.html','utf8').includes('href="open-source.
 assert.ok(fs.readFileSync('site/privacy.html','utf8').includes('href="open-source.html"'));
 const privacy=fs.readFileSync('site/privacy.html','utf8');
 const rootPrivacy=fs.readFileSync('privacy.html','utf8');
+assert.ok(privacy.includes('Отдельная база адресов, архив обращений и списки рассылки автором не ведутся; переписка не используется для рекламы или аналитики.'),'Privacy must reflect confirmed absence of separate support database/archive/marketing use');
+assert.ok(rootPrivacy.includes('Отдельная база адресов, архив обращений и списки рассылки автором не ведутся; переписка не используется для рекламы или аналитики.'),'Legacy privacy must reflect the same email practice');
+assert.ok(fs.readFileSync('site/i18n.js','utf8').includes('The developer does not maintain a separate address database, support-message archive or mailing list, and does not use correspondence for advertising or analytics.'),'English localization must disclose the same minimal email practice');
 const languageNotice=privacy.match(/<p>(На странице скачивания[^<]+)<\/p>/)?.[1];
 assert.ok(languageNotice?.includes('localStorage'),'Document saved local language preference on public privacy page');
 assert.ok(rootPrivacy.includes('localStorage'),'Document stored language preference on stand-alone privacy page');
