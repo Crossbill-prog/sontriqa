@@ -11,6 +11,13 @@ assert.match(index, /src="i18n\.js"/);
 assert.match(privacy, /data-lang="ru"/);
 assert.match(privacy, /data-lang="en"/);
 assert.match(privacy, /src="i18n\.js"/);
+const security=fs.readFileSync('site/security.html','utf8');
+assert.match(security, /data-lang="ru"/);
+assert.match(security, /data-lang="en"/);
+assert.match(security, /src="i18n\.js"/);
+assert.ok(security.includes('Публичная RC.18 использует Tauri 2.11.5'));
+assert.ok(fs.readFileSync('site/i18n.js','utf8').includes("'Безопасность': 'Security'"));
+assert.ok(fs.readFileSync('site/i18n.js','utf8').includes("The public RC.18 uses Tauri 2.11.5"));
 assert.match(app, /setStatusMessage/);
 
 function createMock(saved) {

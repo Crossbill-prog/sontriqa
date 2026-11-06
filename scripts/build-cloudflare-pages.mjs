@@ -18,7 +18,7 @@ run('scripts/generate-site-config.mjs',[repository,'site/config.js']);
 for(const test of [
   'test_site.mjs','test_site_i18n.mjs','test_site_release_guard.mjs'
 ])run(test);
-for(const file of ['index.html','config.js','app.js','i18n.js','release-validator.js','privacy.html','open-source.html']){
+for(const file of ['index.html','config.js','app.js','i18n.js','release-validator.js','privacy.html','open-source.html','security.html']){
   if(!existsSync(`site/${file}`))throw Error('Missing static site file: '+file);
 }
 const guard=readFileSync('site/release-validator.js','utf8');

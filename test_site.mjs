@@ -35,10 +35,21 @@ for (const required of [
 ]) assert.ok(validator.includes(required),'Missing required stable release asset: '+required);
 assert.match(fs.readFileSync('site/index.html','utf8'),/src="release-validator\.js"/);
 assert.match(fs.readFileSync('site/index.html','utf8'),/aria-disabled="true"/);
-const advisoryWarning=fs.readFileSync('site/index.html','utf8');
-assert.ok(advisoryWarning.includes('Публичная RC.18 использует Tauri 2.11.5'),'Public RC must be clearly marked as affected by advisory');
-assert.ok(advisoryWarning.includes('GHSA-w28w-mhc8-qvjv'),'Advisory should be linked');
-assert.ok(advisoryWarning.includes('в Sontriqa не подтверждена'),'No claim of proven exploitability');
+const home=fs.readFileSync('site/index.html','utf8');
+const securityPage=fs.readFileSync('site/security.html','utf8');
+assert.ok(!home.includes('Публичная RC.18 использует Tauri 2.11.5'),
+ 'Detailed security warning must not overwhelm the home page');
+assert.ok(home.includes('href="security.html">Безопасность</a>'),
+ 'Prominently accessible safety information must remain in the site footer');
+assert.ok(securityPage.includes('Публичная RC.18 использует Tauri 2.11.5'),
+ 'Previously released vulnerable RC18 must have accurate disclosure on security page');
+assert.ok(securityPage.includes('GHSA-w28w-mhc8-qvjv'),
+ 'Security page must link the exact official GitHub advisory');
+assert.ok(securityPage.includes('в Sontriqa не подтверждена'),
+ 'Security page must not assert proven exploitability in Sontriqa');
+assert.ok(securityPage.includes('Новая исправленная сборка на Tauri 2.12.3'),
+ 'Security page must note the prepared patched release without claiming it is published');
+assert.ok(securityPage.includes('href="index.html"'),'Security page must link back home');
 const wf=fs.readFileSync('.github/workflows/pages.yml','utf8');
 assert.match(wf,/actions\/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e/);
 assert.ok(wf.includes('name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}'), 'Pages upload artifact must be unique per attempt');
