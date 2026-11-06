@@ -19,13 +19,14 @@ function simulate(releaseGuardSource) {
   vm.runInNewContext(app,ctx,{timeout:2000});
   return {requests,button:elements.get('download'),window};
 }
-const held=simulate(validator);
+const approved=simulate(validator);
+assert.equal(approved.window.SontriqaReleaseValidator.publicReleaseEnabled,true);
+assert.equal(approved.requests,1,'Only published approved stable may trigger the GitHub API lookup');
+const held=simulate(validator.replace('const releaseHold=false;','const releaseHold=true;'));
 assert.equal(held.window.SontriqaReleaseValidator.publicReleaseEnabled,false);
-assert.equal(held.requests,0,'No visitor GitHub API calls while the public release is held');
+assert.equal(held.requests,0,'Emergency hold must prevent release API requests');
 assert.equal(held.button.href,undefined,'No download URL while held');
-const permitted=simulate(validator.replace('const releaseHold=true;','const releaseHold=false;'));
-assert.equal(permitted.requests,1,'Only an approved release can trigger GitHub API lookup');
 const denied=simulate(validator.replace('const securityFixApproved=true;','const securityFixApproved=false;'));
 assert.equal(denied.requests,0,'Failed security approval also forbids GitHub release lookup');
 assert.equal(simulate(null).requests,0,'Missing validator must fail closed');
-console.log('Website release API privacy: zero requests before approval; fail-closed cases OK.');
+console.log('Website release API: approved stable lookup, emergency hold, security veto and fail-closed cases OK.');

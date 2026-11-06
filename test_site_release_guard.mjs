@@ -4,25 +4,26 @@ import vm from 'node:vm';
 
 const source=fs.readFileSync('site/release-validator.js','utf8');
 const context={window:{}};
-// The patched signed binary is accepted; legal/publication approval is still blocked.
-assert.ok(source.includes('const releaseHold=true;'),'old vulnerable binary must be blocked');
+// The exact patched stable release has been published. Keep negative tests
+// for an emergency hold and every incomplete/tampered release.
+assert.ok(source.includes('const releaseHold=false;'),'Stable download must be deliberately enabled after owner approval');
 const production={window:{}};
 vm.runInNewContext(source,production,{timeout:2000});
-// Only the isolated test scenario opens the guard to cover all asset validation branches.
-const candidateSource=source
-  .replace('const releaseHold=true;','const releaseHold=false;');
-vm.runInNewContext(candidateSource,context,{timeout:2000});
+vm.runInNewContext(source,context,{timeout:2000});
+const held={window:{}};
+vm.runInNewContext(source.replace('const releaseHold=false;','const releaseHold=true;'),held,{timeout:2000});
 const {findStableInstaller,inspectStableReleaseAssets,expectedAssets,approvedStableTag,approvedInstallerSHA256,approvedAssetSHA256,securityFixApproved}=context.window.SontriqaReleaseValidator;
-assert.equal(securityFixApproved,true,'Only patched approved EXE is eligible; publication remains separately held');
+assert.equal(securityFixApproved,true,'Only patched approved EXE is eligible');
 assert.match(source,/if\(releaseHold \|\| !securityFixApproved\)return null/,'releaseHold must participate in the real download decision');
 const repo='Crossbill-prog/sontriqa';
 const tag='v1.0.0';
 assert.equal(approvedStableTag,tag);
 assert.equal(approvedInstallerSHA256,'ebcaa560685f16bc6e12f724e47999ce9cb9989212c7681e4c50d590afeada6b');
-assert.ok(source.includes('const releaseHold=true;'),'Production must remain legally held');
+assert.ok(source.includes('const releaseHold=false;'),'Production must be enabled only for this frozen stable release');
 assert.equal(production.window.SontriqaReleaseValidator.securityFixApproved,true);
-assert.equal(production.window.SontriqaReleaseValidator.publicReleaseEnabled,false,'No automatic release API requests while held');
-assert.equal(context.window.SontriqaReleaseValidator.publicReleaseEnabled,true,'Only isolated approved scenario can query releases');
+assert.equal(production.window.SontriqaReleaseValidator.publicReleaseEnabled,true,'Stable downloads enabled after public release');
+assert.equal(context.window.SontriqaReleaseValidator.publicReleaseEnabled,true);
+assert.equal(held.window.SontriqaReleaseValidator.publicReleaseEnabled,false,'Emergency hold must prevent release lookups');
 const base='https://github.com/'+repo+'/releases/download/'+tag+'/';
 assert.equal(Object.keys(approvedAssetSHA256).length,Object.keys(expectedAssets).length);
 const assets=Object.entries(expectedAssets).map(([name,minSize])=>({
@@ -30,14 +31,15 @@ const assets=Object.entries(expectedAssets).map(([name,minSize])=>({
   digest:'sha256:'+approvedAssetSHA256[name]
 }));
 const release={draft:false,prerelease:false,tag_name:tag,assets};
-assert.equal(production.window.SontriqaReleaseValidator.findStableInstaller(release,repo),null,'production must not link vulnerable 2.11.1 binary even if complete release is accidentally published');
+assert.equal(production.window.SontriqaReleaseValidator.findStableInstaller(release,repo)?.name,'Sontriqa-Setup-x64.exe','Production must link only complete verified stable release');
+assert.equal(held.window.SontriqaReleaseValidator.findStableInstaller(release,repo),null,'Emergency hold must always deny downloads');
 assert.ok(Object.hasOwn(expectedAssets,'SELECTORS_0.38.0_MPL_SOURCE.zip'),'stable 1.0 must require its exact MPL source');
 assert.ok(Object.hasOwn(expectedAssets,'BUILD_PROVENANCE.json'),'stable must include filename-rebased cryptographic build evidence');
 assert.ok(Object.hasOwn(expectedAssets,'RELEASE_NOTES_RU_EN.md'),'stable must include reviewed bilingual release notes');
 assert.ok(!Object.hasOwn(expectedAssets,'SELECTORS_0.36.1_MPL_SOURCE.zip'),'RC.18 MPL source cannot substitute for stable 1.0');
 assert.equal(findStableInstaller(release,repo)?.name,'Sontriqa-Setup-x64.exe','isolated candidate demonstrates how explicit new approval would work');
 assert.equal(production.window.SontriqaReleaseValidator.inspectStableReleaseAssets(release,repo)?.name,'Sontriqa-Setup-x64.exe',
- 'Exact frozen hashes pass inspection while the separate legal publication hold still blocks downloads');
+ 'Exact frozen hashes allow the released stable EXE');
 const selected=inspectStableReleaseAssets(release,repo);
 assert.equal(selected?.name,'Sontriqa-Setup-x64.exe','complete stable release should be downloadable');
 for (const [name] of Object.entries(expectedAssets)) {

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {spawnSync} from 'node:child_process';
 const app=fs.readFileSync('site/app.js','utf8');
 const validator=fs.readFileSync('site/release-validator.js','utf8');
-assert.ok(validator.includes('const releaseHold=true;'),'No stable 1.0 download before legal/publication approval');
+assert.ok(validator.includes('const releaseHold=false;'),'Owner-approved stable 1.0 public release has been published');
 assert.match(app,/SontriqaReleaseValidator\?\.findStableInstaller/);
 assert.equal((app.match(/releases\.hidden = false;/g)||[]).length,1,
  'Release history must not be exposed while only vulnerable RC18 is available');
@@ -61,9 +61,9 @@ for(const [pkg,ver] of [["cssparser","0.37.0"],["cssparser-macros","0.7.1"],["dt
   assert.ok(mplPage.includes(`https://docs.rs/crate/${pkg}/${ver}/source/`),'Browsable MPL source missing: '+pkg);
 }
 assert.ok(mplPage.includes('44a068655cada9bf8746a8a6e853569380c4e4ec2c7b6306e206d1731b83d09b'),
- 'Display exact verified five-component MPL source SHA-256 without publishing unreleased download URL');
-assert.ok(mplPage.includes('До публикации стабильной версии ссылка на этот ZIP не действует'),
- 'MPL source ZIP must not be falsely described as already publicly downloadable');
+ 'Display exact verified five-component MPL source SHA-256');
+assert.ok(mplPage.includes('https://github.com/Crossbill-prog/sontriqa/releases/download/v1.0.0/SELECTORS_0.38.0_MPL_SOURCE.zip'),
+ 'Exact MPL source archive must be publicly linked after 1.0 release');
 assert.ok(mplPage.includes('This is a technical availability statement'));
 assert.ok(fs.readFileSync('site/index.html','utf8').includes('href="open-source.html"'));
 assert.ok(fs.readFileSync('site/privacy.html','utf8').includes('href="open-source.html"'));

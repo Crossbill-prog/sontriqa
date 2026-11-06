@@ -1,7 +1,7 @@
 /**
  * Deterministic, dependency-free build entrypoint for Cloudflare Pages.
  * Uses the same protected static site as the legacy GitHub Pages workflow.
- * Never enables the stable download, signs files or publishes any release.
+ * Builds the already approved public stable site without signing or publishing binaries.
  */
 import {spawnSync} from 'node:child_process';
 import {existsSync,readFileSync,readdirSync} from 'node:fs';
@@ -23,7 +23,7 @@ for(const file of ['index.html','config.js','app.js','i18n.js','release-validato
   if(!existsSync(`site/${file}`))throw Error('Missing static site file: '+file);
 }
 const guard=readFileSync('site/release-validator.js','utf8');
-if(!guard.includes('const releaseHold=true;'))throw Error('Stable download legal hold must be enabled');
+if(!guard.includes('const releaseHold=false;'))throw Error('Verified stable release download must be enabled');
 if(!guard.includes('if(releaseHold || !securityFixApproved)return null;')){
   throw Error('Stable download must remain fail-closed');
 }
@@ -32,4 +32,4 @@ if(files.some(p=>/(?:^|[/\\])(?:\.env|\.git|REPRO_LOCKFILES_PRIVATE\.zip)(?:$|[/
   /\.(?:pem|p12|pfx|key|exe)$/i.test(p))){
   throw Error('Unexpected private key, executable, or reproducibility artifact in static output');
 }
-console.log('Cloudflare Pages static output ready: site/ — 11-asset gate and legal hold verified.');
+console.log('Cloudflare Pages static output ready: site/ — public stable 1.0.0, frozen 11-asset gate verified.');

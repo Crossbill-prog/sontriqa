@@ -3,18 +3,18 @@
 // must match the *new*, patched, owner-accepted NSIS candidate from private
 // CI #41951613118 (SHA256: ebcaa560685f16bc6e12f724e47999ce9cb9989212c7681e4c50d590afeada6b),
 // and only AFTER separate legal/publication approval. The exact reviewed hashes
-// are now pinned, but the publication hold must remain enabled independently.
+// are pinned; the site was enabled only after stable publication and checks.
 // Browser-side checks are NOT an Ed25519 signature verification.
 (() => {
-  // The previously accepted installer uses vulnerable Tauri 2.11.1.
-  // The new patched binary was built, signed and accepted on Windows; do NOT
-  // enable public downloads until explicit legal/publication approval too.
-  const releaseHold=true;
+  // Historical 1.0.0 candidate used vulnerable Tauri 2.11.1.
+  // The patched 2.12.3 binary was independently verified, owner-accepted,
+  // and released publicly as stable v1.0.0 on 6 November 2026.
+  const releaseHold=false;
   const approvedStableTag='v1.0.0';
   const approvedInstallerSHA256='ebcaa560685f16bc6e12f724e47999ce9cb9989212c7681e4c50d590afeada6b';
   // SHA-256 for the *actual* signed 1.0.0 candidate has been independently
-  // verified against the original private release artifact. This does NOT lift
-  // the legal/publication hold or publish any GitHub Release.
+  // verified against the private release artifact and publicly published on
+  // 6 November 2026. The exact hash and other safety checks remain mandatory.
   const approvedManifestSHA256='3fb48fade9830521256666b70d43e9ff59a9baaffae8b1d6960254dcdb1bbbfd';
   const approvedMplSourceSHA256='44a068655cada9bf8746a8a6e853569380c4e4ec2c7b6306e206d1731b83d09b';
   // VULNERABILITY HOLD: original 1.0.0 EXE (tauri@2.11.1) is affected by
@@ -22,7 +22,8 @@
   // original hash is kept ONLY as an audit record. The download page must NOT
   // automatically promote it even if a Release is accidentally published.
   // The security decision is POSITIVE for this exact patched signed binary.
-  // Legal/publication approval is separate and still blocked by releaseHold.
+  // Owner publication approval was given on 6 November 2026; only the
+  // exact, complete stable release can pass this guard.
   const securityFixApproved=true;
   // Frozen SHA-256 inventory: exact independently reviewed private
   // Sontriqa_1.0.0_Private_Release_Review_Updated_Notes.zip (11 files).
@@ -77,7 +78,7 @@
           asset.digest !== `sha256:${approvedAssetSHA256[name]}`) return null;
     }
     // Fail closed if any exact independently verified source or binary hash
-    // changes, even after owner approval of the publication hold.
+    // changes, even after public release.
     if (![approvedInstallerSHA256,approvedManifestSHA256,approvedMplSourceSHA256]
        .every(hash=>/^[a-f0-9]{64}$/.test(hash))) return null;
     // The formerly accepted 1.0 installer used vulnerable tauri@2.11.1.
