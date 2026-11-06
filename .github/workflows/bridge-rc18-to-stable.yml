@@ -1,0 +1,81 @@
+name: 06 — Preserve RC.18 and bridge updates-rc to signed stable 1.0.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/bridge-rc18-to-stable.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  guarded-rc18-migration:
+    if: github.repository == 'Crossbill-prog/sontriqa'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # immutable v4
+      - name: Download and prove exact old and new manifests before touching RC feed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: Crossbill-prog/sontriqa
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/sontriqa-before /tmp/sontriqa-stable
+          gh release download updates-rc --pattern latest.json --dir /tmp/sontriqa-before
+          gh release download v1.0.0 --pattern latest.json --dir /tmp/sontriqa-stable
+          echo 'bcb7099eaf32f6ffde4ef7eb870f2d97b63e5b124c8d2f6746177aeab7f540c8  /tmp/sontriqa-before/latest.json' | sha256sum --check
+          echo '3fb48fade9830521256666b70d43e9ff59a9baaffae8b1d6960254dcdb1bbbfd  /tmp/sontriqa-stable/latest.json' | sha256sum --check
+          python3 - <<'PY'
+          import json,pathlib
+          old=json.loads(pathlib.Path('/tmp/sontriqa-before/latest.json').read_text('utf-8-sig'))
+          new=json.loads(pathlib.Path('/tmp/sontriqa-stable/latest.json').read_text('utf-8-sig'))
+          assert str(old['version']).startswith('1.0.0-rc'),old.get('version')
+          assert new['version']=='1.0.0'
+          assert set(new['platforms'])=={'windows-x86_64'}
+          p=new['platforms']['windows-x86_64']
+          assert p['url']=='https://github.com/Crossbill-prog/sontriqa/releases/download/v1.0.0/Sontriqa-Setup-x64.exe'
+          assert len(p['signature'])>160
+          print('Exact original RC manifest and owner-accepted signed stable manifest verified.')
+          PY
+          gh api repos/Crossbill-prog/sontriqa/releases/434001911 > /tmp/sontriqa-rc-release-before.json
+          gh api repos/Crossbill-prog/sontriqa/releases/latest > /tmp/sontriqa-stable-release.json
+          python3 - <<'PY'
+          import json,pathlib
+          rc=json.loads(pathlib.Path('/tmp/sontriqa-rc-release-before.json').read_text())
+          st=json.loads(pathlib.Path('/tmp/sontriqa-stable-release.json').read_text())
+          assert rc['tag_name']=='updates-rc' and rc['prerelease'] and not rc['draft'] and len(rc['assets'])==1
+          assert rc['assets'][0]['name']=='latest.json'
+          assert rc['assets'][0]['digest']=='sha256:bcb7099eaf32f6ffde4ef7eb870f2d97b63e5b124c8d2f6746177aeab7f540c8'
+          assert st['tag_name']=='v1.0.0' and not st['prerelease'] and not st['draft'] and len(st['assets'])==11
+          assert next(a for a in st['assets'] if a['name']=='latest.json')['digest']=='sha256:3fb48fade9830521256666b70d43e9ff59a9baaffae8b1d6960254dcdb1bbbfd'
+          print('Both GitHub releases and original RC bridge assets validated')
+          PY
+      - name: Backup original prerelease update feed as PRIVATE Actions artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # reviewed immutable v7
+        with:
+          name: sontriqa-rc18-feed-before-stable-bridge
+          path: /tmp/sontriqa-before/latest.json
+          if-no-files-found: error
+          retention-days: 90
+      - name: Replace only the RC update manifest, preserving release and historical RC.18
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: Crossbill-prog/sontriqa
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release upload updates-rc /tmp/sontriqa-stable/latest.json --clobber
+          gh api repos/Crossbill-prog/sontriqa/releases/434001911 > /tmp/sontriqa-rc-after.json
+          python3 - <<'PY'
+          import json,pathlib
+          rc=json.loads(pathlib.Path('/tmp/sontriqa-rc-after.json').read_text())
+          assert rc['tag_name']=='updates-rc' and rc['prerelease'] and not rc['draft']
+          assert len(rc['assets'])==1
+          x=rc['assets'][0]
+          assert x['name']=='latest.json' and x['state']=='uploaded'
+          assert x['digest']=='sha256:3fb48fade9830521256666b70d43e9ff59a9baaffae8b1d6960254dcdb1bbbfd'
+          print('RC.18 subscribers now receive the signed stable 1.0.0 manifest; old tag and historical release unchanged.')
+          PY
