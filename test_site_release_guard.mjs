@@ -21,6 +21,8 @@ assert.equal(approvedStableTag,tag);
 assert.equal(approvedInstallerSHA256,'ebcaa560685f16bc6e12f724e47999ce9cb9989212c7681e4c50d590afeada6b');
 assert.ok(source.includes('const releaseHold=true;'),'Production must remain legally held');
 assert.equal(production.window.SontriqaReleaseValidator.securityFixApproved,true);
+assert.equal(production.window.SontriqaReleaseValidator.publicReleaseEnabled,false,'No automatic release API requests while held');
+assert.equal(context.window.SontriqaReleaseValidator.publicReleaseEnabled,true,'Only isolated approved scenario can query releases');
 const base='https://github.com/'+repo+'/releases/download/'+tag+'/';
 assert.equal(Object.keys(approvedAssetSHA256).length,Object.keys(expectedAssets).length);
 const assets=Object.entries(expectedAssets).map(([name,minSize])=>({

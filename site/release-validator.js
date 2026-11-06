@@ -94,6 +94,7 @@
   }
   window.SontriqaReleaseValidator=Object.freeze({
     findStableInstaller,inspectStableReleaseAssets,expectedAssets,
+    publicReleaseEnabled: !releaseHold && securityFixApproved,
     approvedStableTag,approvedInstallerSHA256,approvedAssetSHA256,securityFixApproved
   });
 })();

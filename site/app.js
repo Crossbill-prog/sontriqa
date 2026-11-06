@@ -10,7 +10,7 @@ const setStatusMessage = (message) => {
 };
 setStatusMessage('Стабильный установщик пока не опубликован.');
 const releases = document.getElementById('releases');
-if (/^[\w.-]+\/[\w.-]+$/.test(repo)) {
+if (/^[\w.-]+\/[\w.-]+$/.test(repo) && window.SontriqaReleaseValidator?.publicReleaseEnabled === true) {
   // Keep the legacy vulnerable RC.18 release-history shortcut hidden until
   // the complete accepted stable release passes the separate public guard.
   fetch(`https://api.github.com/repos/${repo}/releases/latest`, {headers: {'Accept':'application/vnd.github+json'}, credentials:'omit'})
