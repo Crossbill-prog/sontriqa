@@ -5,6 +5,8 @@ on:
     branches: [ main ]
     paths:
       - '.github/workflows/prepare-stable-release-draft.yml'
+      - 'docs/RELEASE_NOTES_1_0_0_RU_EN.md'
+      - 'docs/SONTRIQA_1_0_0_RELEASE_MANIFEST.json'
   workflow_dispatch:
 
 permissions:
