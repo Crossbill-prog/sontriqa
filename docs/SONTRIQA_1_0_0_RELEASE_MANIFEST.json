@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "product": "Sontriqa",
+  "version": "1.0.0",
+  "tag": "v1.0.0",
+  "immutableInstallerSha256": "ebcaa560685f16bc6e12f724e47999ce9cb9989212c7681e4c50d590afeada6b",
+  "publicFiles": {
+    "BUILD_PROVENANCE.json": "5b00f8b91c67665a97f188e77b61517ef15670136c5ac17877bf9835dbe600a1",
+    "ENGINE_SOURCE_SHA256.txt": "341339caa70068993ea35b0e93d61c2c5af6b16e4917c9f97d558e404cfc55fe",
+    "ENGINE_UPSTREAM_PROVENANCE.json": "b8e3ce18e409f2c582d31868ce09ac11a5cf54c5d7cb10f6249f44f0b7674390",
+    "MPL_SOURCE_AVAILABILITY.txt": "0de3add643d5ba3b1e65c27d99a734d3d8bc2950258fb394564ce904945c454d",
+    "RELEASE_NOTES_RU_EN.md": "a177d0e5fccfa69eae33b5abe39dbe8a58fe031b93352ff95316b767e5d0368c",
+    "SELECTORS_0.38.0_MPL_SOURCE.zip": "44a068655cada9bf8746a8a6e853569380c4e4ec2c7b6306e206d1731b83d09b",
+    "SHA256SUMS.txt": "0d5e7dc180a1959272bff32cb5675a4ecc8bccb4e5b50941a886442b99af7d31",
+    "Sontriqa-Setup-x64.exe": "ebcaa560685f16bc6e12f724e47999ce9cb9989212c7681e4c50d590afeada6b",
+    "Sontriqa-Setup-x64.exe.sig": "4141c4466c17d776a28dac75bd4cf4d457740a5d292af969d86c4477f1074990",
+    "THIRD_PARTY_DEPENDENCIES_GENERATED.txt": "8e55da0b1aeb7fc72d96ce975d0e84113734566370010bd87a0ae04b82415f06",
+    "latest.json": "3fb48fade9830521256666b70d43e9ff59a9baaffae8b1d6960254dcdb1bbbfd"
+  }
+}
