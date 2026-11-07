@@ -88,4 +88,21 @@ assert.ok(rootPrivacy.includes(updaterNotice),'Root and deployed privacy pages m
 const i18n=fs.readFileSync('site/i18n.js','utf8');
 assert.ok(i18n.includes(JSON.stringify(updaterNotice)+': '),'English website must translate the complete signed updater disclosure');
 assert.ok(i18n.includes('Downloading and installing an update requires your explicit confirmation.'));
-console.log('Public download-site self-check OK');
+
+const seoHome=fs.readFileSync('site/index.html','utf8');
+const robots=fs.readFileSync('site/robots.txt','utf8');
+const sitemap=fs.readFileSync('site/sitemap.xml','utf8');
+assert.ok(seoHome.includes('<link rel="canonical" href="https://sontriqa.pages.dev/">'),'Canonical must target official Cloudflare Pages domain');
+assert.ok(seoHome.includes('property="og:title"')&&seoHome.includes('name="twitter:card"'),'SEO social preview metadata required');
+assert.ok(seoHome.includes('"@type": "SoftwareApplication"'),'Actual free software schema required');
+assert.ok(seoHome.includes('name="description"'),'Search engine description required');
+assert.ok(seoHome.includes('программа маршрутизации звука'),'Describe the real sound routing benefit in visible content');
+assert.ok(robots.includes('Sitemap: https://sontriqa.pages.dev/sitemap.xml'),'Robots must reference the canonical sitemap');
+for (const path of ['/','/privacy.html','/open-source.html']) {
+  assert.ok(sitemap.includes('<loc>https://sontriqa.pages.dev'+(path==='/'?'/':path)+'</loc>'),'Missing canonical sitemap URL '+path);
+}
+assert.ok(fs.readFileSync('site/privacy.html','utf8').includes('rel="canonical"'),'Legal page canonical required');
+assert.ok(fs.readFileSync('site/open-source.html','utf8').includes('rel="canonical"'),'MPL page canonical required');
+assert.ok(fs.readFileSync('index.html','utf8').includes('rel="canonical" href="https://sontriqa.pages.dev/"'),'Legacy GitHub Pages duplicate must canonicalize to main site');
+assert.ok(fs.readFileSync('site/i18n.js','utf8').includes('Sontriqa — free audio routing for Windows'),'English SEO title translation required');
+console.log('Public download-site and technical SEO self-check OK');

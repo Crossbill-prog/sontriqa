@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sontriqa.pages.dev/sitemap.xml

@@ -5,13 +5,14 @@
 (() => {
   const KEY = 'sontriqa:language:v1';
   const en = {
-    'Sontriqa — звук каждому устройству': 'Sontriqa — your audio, your way',
+    'Sontriqa — маршрутизация звука приложений для Windows': 'Sontriqa — free audio routing for Windows',
     'Возможности': 'Features',
     'Как работает': 'How it works',
     'Автор': 'Developer',
     'Исходники MPL-2.0': 'MPL-2.0 source code',
     'Вернуться на главную': 'Back to home',
     'Бесплатная программа для Windows': 'Free app for Windows',
+    'Sontriqa — бесплатная программа маршрутизации звука в Windows 10/11. Отправляйте звук одного приложения на два и более устройства одновременно или распределяйте разные приложения по отдельным аудиовыходам.': 'Sontriqa is a free audio routing app for Windows 10/11. Play one application on two or more output devices simultaneously, or route different apps to separate audio outputs.',
     'Твой звук —': 'Your sound —',
     'твои правила': 'your rules',
     'Игра — на саундбар и телевизор одновременно, браузер — в наушники. Выбирай устройства и регулируй громкость каждого выхода отдельно.': 'Play game audio through your soundbar and TV at the same time, and send browser audio to your headphones. Choose your devices and set the volume for each output independently.',
@@ -67,7 +68,7 @@
     'Пример таблицы Sontriqa: разные приложения и выбранные аудиовыходы': 'Example Sontriqa routing table with apps and output devices',
     'Скопировать адрес электронной почты': 'Copy email address',
     'Копировать адрес': 'Copy address',
-    'Sontriqa — бесплатная программа для Windows: направляйте звук каждого приложения на колонки, телевизор и наушники с независимой громкостью.': 'Sontriqa is a free Windows app for routing each app to speakers, a TV and headphones with independent volume control.',
+    'Бесплатная Sontriqa для Windows 10/11: выводите звук одного приложения на два устройства одновременно или разделяйте звук разных приложений. Отдельная громкость для каждого выхода.': 'Free Sontriqa for Windows 10/11: play one app on two audio devices at the same time or route different apps separately. Independent volume per output.',
     'Скопировано': 'Copied',
     'Скопируйте адрес вручную': 'Please copy the address manually'
   };
